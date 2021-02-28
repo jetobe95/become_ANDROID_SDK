@@ -179,39 +179,42 @@ public class MainBDIV extends AppCompatActivity implements AsynchronousTask {
 
     @Override
     public void onReceiveResultsTransaction(ResponseIV responseIV, int transactionId) {
-        runOnUiThread (() -> {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
 
-            if (transactionId == INITAUTHRESPONSE) {
-                Animation animFadeOut = AnimationUtils.loadAnimation (this, R.anim.fade_out);
-                frameInit.startAnimation (animFadeOut);
-                frameInit.setVisibility (View.GONE);
-                ((MyApplication) getAppContext ( )).setAccess_token (responseIV.getMessage ( ));
-            }
-
-            if (transactionId == USERRESPONSE) {
-                if (responseIV.getResponseStatus ( ) == ResponseIV.SUCCES) {
-                    isOkResponse = true;
-                    getWindow ( ).clearFlags (WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                    countdownToGetdata.cancel ( );
-                    mData.putExtra ("ResponseIV", (Parcelable) responseIV);
-                    setResult (RESULT_OK, mData);
-                    finish ( );
-                } else {
-                    countdownToGetdata.cancel ( );
-                    setResultError (responseIV.getMessage ( ));
+                if (transactionId == INITAUTHRESPONSE) {
+                    Animation animFadeOut = AnimationUtils.loadAnimation (getAppContext(), R.anim.fade_out);
+                    frameInit.startAnimation (animFadeOut);
+                    frameInit.setVisibility (View.GONE);
+                    ((MyApplication) getAppContext ( )).setAccess_token (responseIV.getMessage ( ));
                 }
-            }
 
-            if (transactionId == ADDDATARESPONSE) {
-                if (responseIV.getResponseStatus ( ) == ResponseIV.SUCCES) {
-                    textInfoServer.setText (getResources ( ).getString (R.string.text_progress_inteligence));
-                    urlVGlobal = responseIV.getMessage ( );
-                    initCounDownGetData (responseIV.getMessage ( ));
-                } else {
-                    setResultError (responseIV.getMessage ( ));
+                if (transactionId == USERRESPONSE) {
+                    if (responseIV.getResponseStatus ( ) == ResponseIV.SUCCES) {
+                        isOkResponse = true;
+                        getWindow ( ).clearFlags (WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                        countdownToGetdata.cancel ( );
+                        mData.putExtra ("ResponseIV", (Parcelable) responseIV);
+                        setResult (RESULT_OK, mData);
+                        finish ( );
+                    } else {
+                        countdownToGetdata.cancel ( );
+                        setResultError (responseIV.getMessage ( ));
+                    }
                 }
+
+                if (transactionId == ADDDATARESPONSE) {
+                    if (responseIV.getResponseStatus ( ) == ResponseIV.SUCCES) {
+                        textInfoServer.setText (getResources ( ).getString (R.string.text_progress_inteligence));
+                        urlVGlobal = responseIV.getMessage ( );
+                        initCounDownGetData (responseIV.getMessage ( ));
+                    } else {
+                        setResultError (responseIV.getMessage ( ));
+                    }
+                }
+                Log.d (TAG, responseIV.toString ( ));
             }
-            Log.d (TAG, responseIV.toString ( ));
         });
     }
 
