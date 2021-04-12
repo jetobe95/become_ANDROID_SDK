@@ -46,7 +46,7 @@ Cómo primera medida es necesaria la implementacion de los siguientes módulos:
 		 
 	Ejemplo:
 		 
-		 implementation 'com.github.Becomedigital:become_ANDROID_SDK:2.28'
+		 implementation 'com.github.Becomedigital:become_ANDROID_SDK:2.2.8'
 		 
  3. Al realizar los pasos anteriores, debe sincronizar su proyecto con gradle.
  
