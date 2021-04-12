@@ -48,11 +48,14 @@ public class MainActivity extends AppCompatActivity {
         EditText textVlidationType = findViewById(R.id.validationType);
         EditText textUserId = findViewById(R.id.textUserId);
         Button btnAut = findViewById(R.id.btnAuth);
+        String clientSecretP = "YOUR_CLIENT_SECRET";
+        String clientIdP = "YOUR_CLIENT_ID";
+        String contractIdP = "YOUR_CONTRACT_ID";
         btnAut.setOnClickListener(view -> {
             String validatiopnTypes = textVlidationType.getText().toString().isEmpty() ? "VIDEO/PASSPORT/DNI/LICENSE" : textVlidationType.getText().toString();
-            String clientSecret = textClientSecret.getText().toString().isEmpty() ? "FKLDM63GPH89TISBXNZ4YJUE57WRQA25" : textClientSecret.getText().toString();
-            String clientId = textClientId.getText().toString().isEmpty() ? "acc_demo" : textClientId.getText().toString();
-            String contractId = textContractId.getText().toString().isEmpty() ? "2" : textContractId.getText().toString();
+            String clientSecret = textClientSecret.getText().toString().isEmpty() ? clientSecretP : textClientSecret.getText().toString();
+            String clientId = textClientId.getText().toString().isEmpty() ? clientIdP : textClientId.getText().toString();
+            String contractId = textContractId.getText().toString().isEmpty() ? contractIdP : textContractId.getText().toString();
             Date currentTime = Calendar.getInstance().getTime();
             SimpleDateFormat format1 = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.getDefault());
             String inActiveDate = format1.format(currentTime);
