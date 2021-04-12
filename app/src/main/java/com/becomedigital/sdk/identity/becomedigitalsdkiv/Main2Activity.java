@@ -28,9 +28,9 @@ public class Main2Activity extends AppCompatActivity {
 
         //Parámetros de configuración: El valor de los parámetros debe ser solicitado al contratar el servicio
         String validatiopnTypes = "PASSPORT/LICENSE/DNI/VIDEO";
-        String clientSecret = "FKLDM63GPH89TDSDFDSGFGISBWRQA25";
-        String clientId = "abc_def";
-        String contractId = "7";
+        String clientSecret = "YOUR_CLIENT_SECRET";
+        String clientId = "YOUR_CLIENT_ID";
+        String contractId = "YOUR_CONTRACT_ID";
         Date currentTime = Calendar.getInstance().getTime();
         SimpleDateFormat format1 = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.getDefault());
         String inActiveDate = format1.format(currentTime);
