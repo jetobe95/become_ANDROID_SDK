@@ -1,7 +1,5 @@
 package com.becomedigital.sdk.identity.becomedigitalsdkiv;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.becomedigital.sdk.identity.becomedigitalsdk.MainBDIV;
 import com.becomedigital.sdk.identity.becomedigitalsdk.callback.BecomeCallBackManager;
 import com.becomedigital.sdk.identity.becomedigitalsdk.callback.BecomeInterfaseCallback;
@@ -19,7 +16,6 @@ import com.becomedigital.sdk.identity.becomedigitalsdk.callback.BecomeResponseMa
 import com.becomedigital.sdk.identity.becomedigitalsdk.callback.LoginError;
 import com.becomedigital.sdk.identity.becomedigitalsdk.models.BDIVConfig;
 import com.becomedigital.sdk.identity.becomedigitalsdk.models.ResponseIV;
-
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
