@@ -46,15 +46,25 @@ public class MainActivity extends AppCompatActivity {
         EditText textClientId = findViewById(R.id.clienidText);
         EditText textContractId = findViewById(R.id.ContractIdText);
         EditText textVlidationType = findViewById(R.id.validationType);
+        EditText textUserId = findViewById(R.id.textUserId);
         Button btnAut = findViewById(R.id.btnAuth);
         btnAut.setOnClickListener(view -> {
-            String validatiopnTypes = textVlidationType.getText().toString().isEmpty() ? "VIDEO/DNI" : textVlidationType.getText().toString();
+<<<<<<< HEAD
+            String validatiopnTypes = textVlidationType.getText().toString().isEmpty() ? "VIDEO/PASSPORT/DNI/LICENSE" : textVlidationType.getText().toString();
             String clientSecret = textClientSecret.getText().toString().isEmpty() ? "FKLDM63GPH89TISBXNZ4YJUE57WRQA25" : textClientSecret.getText().toString();
             String clientId = textClientId.getText().toString().isEmpty() ? "acc_demo" : textClientId.getText().toString();
             String contractId = textContractId.getText().toString().isEmpty() ? "2" : textContractId.getText().toString();
+=======
+            String validatiopnTypes = textVlidationType.getText().toString().isEmpty() ? "" : textVlidationType.getText().toString();
+            String clientSecret = textClientSecret.getText().toString().isEmpty() ? "" : textClientSecret.getText().toString();
+            String clientId = textClientId.getText().toString().isEmpty() ? "" : textClientId.getText().toString();
+            String contractId = textContractId.getText().toString().isEmpty() ? "" : textContractId.getText().toString();
+>>>>>>> fe6dca6f64e8566773ca260d28149efb1573b44f
             Date currentTime = Calendar.getInstance().getTime();
             SimpleDateFormat format1 = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.getDefault());
             String inActiveDate = format1.format(currentTime);
+            String userId = textUserId.getText().toString().isEmpty() ? inActiveDate : textUserId.getText().toString();
+
 
             BecomeResponseManager.getInstance().startAutentication(MainActivity.this,
                     new BDIVConfig(clientId,
@@ -63,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                             validatiopnTypes,
                             true,
                             byteArray,
-                            inActiveDate
+                            userId
                     ));
             BecomeResponseManager.getInstance().registerCallback(mCallbackManager, new BecomeInterfaseCallback() {
                 @Override

@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.io.Serializable;
 
 public class ResponseIV implements Parcelable, Serializable {
-
+    public static final int NOFOUND = 3;
     public static final int ERROR = 2;
     public static final int PENDING = 1;
     public static final int SUCCES = 0;
@@ -54,7 +54,8 @@ public class ResponseIV implements Parcelable, Serializable {
         this.responseStatus = responseStatus;
         this.message = message;
     }
-
+    public ResponseIV() {
+    }
 
     public ResponseIV(String id,
                       String created_at,

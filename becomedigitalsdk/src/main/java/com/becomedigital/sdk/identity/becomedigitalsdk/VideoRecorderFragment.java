@@ -50,6 +50,7 @@ import androidx.fragment.app.Fragment;
 
 import com.becomedigital.sdk.identity.becomedigitalsdk.R;
 import com.becomedigital.sdk.identity.becomedigitalsdk.mediaRecorders.AutoFitTextureView;
+import com.becomedigital.sdk.identity.becomedigitalsdk.models.BDIVConfig;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
@@ -71,6 +72,8 @@ public class VideoRecorderFragment extends Fragment {
     private static final SparseIntArray INVERSE_ORIENTATIONS = new SparseIntArray();
     private static final int SENSOR_ORIENTATION_DEFAULT_DEGREES = 90;
     private static final int SENSOR_ORIENTATION_INVERSE_DEGREES = 270;
+
+
     static {
         DEFAULT_ORIENTATIONS.append(Surface.ROTATION_0, 90);
         DEFAULT_ORIENTATIONS.append(Surface.ROTATION_90, 0);
@@ -84,10 +87,6 @@ public class VideoRecorderFragment extends Fragment {
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_180, 90);
         INVERSE_ORIENTATIONS.append(Surface.ROTATION_270, 0);
     }
-
-
-
-    private String cameraId;
 
     /**
      * An {@link AutoFitTextureView} for camera preview.
@@ -251,6 +250,10 @@ public class VideoRecorderFragment extends Fragment {
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         super.onViewCreated (view, savedInstanceState);
         mTextureView = getActivity ( ).findViewById (R.id.texture);
+       Bundle arguments = getArguments();
+        if (arguments != null) {
+            config = (BDIVConfig) arguments.getSerializable("config");
+        }
     }
 
     @Override
@@ -315,7 +318,10 @@ public class VideoRecorderFragment extends Fragment {
                     e.printStackTrace ( );
                 }
                 recording = false;
-                findNavController (getActivity ( ), R.id.nav_host_fragment).navigate (R.id.actionOkRecordSelecDocument);
+                Bundle bundle = new Bundle ( );
+                bundle.putSerializable("config", config);
+                bundle.putString("urlVideoFile", urlVideoFile);
+                findNavController (getActivity ( ), R.id.nav_host_fragment).navigate (R.id.actionOkRecordSelecDocument, bundle);
             }
         }.start ( );
     }
@@ -330,7 +336,6 @@ public class VideoRecorderFragment extends Fragment {
 
     private ImageButton btnCapture;
     private static MediaRecorder mRecorder;
-    private String urlVideoFile;
     private boolean isCameraActive = false;
     private static TextView textTimerRecord;
     private static TextView textTimerToStart;
@@ -342,6 +347,8 @@ public class VideoRecorderFragment extends Fragment {
     private CountDownTimer countDownTimerRecord;
     private CountDownTimer countDownTimerGeneral;
     private Integer mSensorOrientation;
+    private BDIVConfig config;
+    private String urlVideoFile;
     private void initialSetups() {
         textTittleVideo = getActivity ( ).findViewById (R.id.textTittleVideo);
         // controls video
@@ -397,7 +404,7 @@ public class VideoRecorderFragment extends Fragment {
             if (!mCameraOpenCloseLock.tryAcquire (2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException ("Time out waiting to lock camera opening.");
             }
-            cameraId = manager.getCameraIdList ( )[CameraCharacteristics.LENS_FACING_BACK];
+            String cameraId = manager.getCameraIdList()[CameraCharacteristics.LENS_FACING_BACK];
             // Choose the sizes for camera preview and video recording
             CameraCharacteristics characteristics = manager.getCameraCharacteristics (cameraId);
 
@@ -677,7 +684,7 @@ public class VideoRecorderFragment extends Fragment {
         mMediaRecorder.reset ( );
         countDownTimerGeneral.cancel ( );
         countDownTimerRecord.cancel ( );
-        ((MyApplication) getActivity ( ).getApplication ( )).setUrlVideo (urlVideoFile);
+        urlVideoFile = urlVideoFile;
     }
 
     /**

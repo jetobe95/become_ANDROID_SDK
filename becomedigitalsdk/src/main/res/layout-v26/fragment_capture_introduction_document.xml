@@ -57,7 +57,8 @@
         android:textSize="@dimen/text_size_tittle"
         app:layout_constraintBottom_toTopOf="@+id/textCountry"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="prueba" />
 
     <TextView
         android:id="@+id/textCountry"
@@ -73,7 +74,8 @@
         android:textSize="@dimen/text_size_sub_tittle"
         app:layout_constraintBottom_toTopOf="@+id/btnCaptureDoc"
         app:layout_constraintEnd_toEndOf="@+id/textDocType"
-        app:layout_constraintStart_toStartOf="@+id/textDocType" />
+        app:layout_constraintStart_toStartOf="@+id/textDocType"
+        tools:text="prueba" />
 
     <Button
         android:id="@+id/btnGalery"

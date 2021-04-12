@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.becomedigital.sdk.identity.becomedigitalsdk.models.BDIVConfig;
 import com.bumptech.glide.Glide;
 
 import static androidx.core.content.ContextCompat.checkSelfPermission;
@@ -33,6 +34,7 @@ public class IntroductionVideoFragment extends Fragment {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.RECORD_AUDIO,
             Manifest.permission.READ_EXTERNAL_STORAGE};
+    private BDIVConfig config;
 
     public IntroductionVideoFragment() {
         // Required empty public constructor
@@ -83,7 +85,10 @@ public class IntroductionVideoFragment extends Fragment {
                 .load (R.drawable.liveness)
                 .into (imageView);
         Button btnContinue = getActivity ( ).findViewById (R.id.btnRecordinVideo);
-
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            config = (BDIVConfig) arguments.getSerializable("config");
+        }
         btnContinue.setOnClickListener (view1 -> {
             if (checkCameraHardware (getActivity ( ))) {
                 if (arePermissionsGranted ( )) {
@@ -109,8 +114,7 @@ public class IntroductionVideoFragment extends Fragment {
 
     private void goToVideoRecording() {
         Bundle bundle = new Bundle ( );
-        bundle.putBoolean ("isFront", true);
-        bundle.putBoolean ("isVideoCapture", true);
+        bundle.putSerializable("config", config);
         findNavController (getActivity ( ), R.id.nav_host_fragment).navigate (R.id.fragRecordVideo, bundle);
     }
 }

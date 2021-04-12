@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.becomedigital.sdk.identity.becomedigitalsdk.models.BDIVConfig;
 import com.bumptech.glide.Glide;
 
 import static androidx.navigation.Navigation.findNavController;
@@ -30,6 +31,8 @@ public class ConfirmVideoFracment extends Fragment {
         return inflater.inflate (R.layout.fragment_confirm_video_fracment, container, false);
     }
 
+    private BDIVConfig config;
+    private String urlVideoFile;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -39,9 +42,17 @@ public class ConfirmVideoFracment extends Fragment {
         Glide.with (this)
                 .load (R.drawable.liveness)
                 .into (imageView);
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            config = (BDIVConfig) arguments.getSerializable("config");
+            urlVideoFile = arguments.getString("urlVideoFile");
+        }
         Button btnContinue = getActivity ( ).findViewById (R.id.btnConfirmVideo);
         btnContinue.setOnClickListener (view1 -> {
-            findNavController (view).navigate (R.id.actionConfirm);
+            Bundle bundle = new Bundle ( );
+            bundle.putSerializable("config", config);
+            bundle.putString("urlVideoFile", urlVideoFile);
+            findNavController (view).navigate (R.id.actionConfirm, bundle);
         });
         Button btnRetry = getActivity ( ).findViewById (R.id.btnRetry);
         btnRetry.setOnClickListener (view1 -> {

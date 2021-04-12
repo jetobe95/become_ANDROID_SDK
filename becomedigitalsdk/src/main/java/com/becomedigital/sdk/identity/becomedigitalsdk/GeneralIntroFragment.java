@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.becomedigital.sdk.identity.becomedigitalsdk.models.BDIVConfig;
+
 import static androidx.navigation.Navigation.findNavController;
 
 
@@ -39,31 +41,41 @@ public class GeneralIntroFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated (view, savedInstanceState);
-        String split = getString (R.string.splitValidationTypes);
-        String[] validationTypesSubs = ((MyApplication) getActivity ( ).getApplicationContext ( )).getValidationTypes ( ).split (split);
-        TextView textAnd = getActivity ( ).findViewById (R.id.textAnd);
-        // controls document
-        TextView textDocument = getActivity ( ).findViewById (R.id.textDocument);
-        ImageView imgDocument = getActivity ( ).findViewById (R.id.imgDocument);
-        // controls video
-        ImageView imgVideo = getActivity ( ).findViewById (R.id.imgVideo);
-        TextView textVideo = getActivity ( ).findViewById (R.id.textVideo);
-        boolean actionContainsVideo = false;
-        for (String validationTypesSub : validationTypesSubs) {
-            if (validationTypesSub.equals ("VIDEO")) {
-                imgVideo.setVisibility (View.VISIBLE);
-                textVideo.setVisibility (View.VISIBLE);
-                textAnd.setVisibility (View.VISIBLE);
-                actionContainsVideo = true;
+        if (getActivity().getIntent().getExtras() != null) {
+            BDIVConfig config = ((MainBDIV) getActivity()).getConfig();
+
+            String split = getString (R.string.splitValidationTypes);
+            String[] validationTypesSubs = config.getValidationTypes ( ).split (split);
+            TextView textAnd = getActivity ( ).findViewById (R.id.textAnd);
+            // controls document
+            TextView textDocument = getActivity ( ).findViewById (R.id.textDocument);
+            ImageView imgDocument = getActivity ( ).findViewById (R.id.imgDocument);
+            // controls video
+            ImageView imgVideo = getActivity ( ).findViewById (R.id.imgVideo);
+            TextView textVideo = getActivity ( ).findViewById (R.id.textVideo);
+            boolean actionContainsVideo = false;
+            for (String validationTypesSub : validationTypesSubs) {
+                if (validationTypesSub.equals ("VIDEO")) {
+                    imgVideo.setVisibility (View.VISIBLE);
+                    textVideo.setVisibility (View.VISIBLE);
+                    textAnd.setVisibility (View.VISIBLE);
+                    actionContainsVideo = true;
+                }
             }
-        }
-        Button btnContinue = getActivity ( ).findViewById (R.id.btnContinue);
-        if (actionContainsVideo) {
-            btnContinue.setOnClickListener (view1 -> findNavController (view1).navigate (R.id.continueAction));
-        } else {
-            btnContinue.setOnClickListener (view1 -> findNavController (view1).navigate (R.id.initFrag));
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("config", config);
+            Button btnContinue = getActivity ( ).findViewById (R.id.btnContinue);
+            if (actionContainsVideo) {
+                btnContinue.setOnClickListener (view1 -> findNavController (view1).navigate (R.id.continueAction, bundle));
+            } else {
+                btnContinue.setOnClickListener (view1 -> findNavController (view1).navigate (R.id.initFrag, bundle));
+            }
+        }else{
+            ((MainBDIV) getActivity ( )).setResultError (getString(R.string.general_error));
         }
     }
+
+
 
     @Override
     public void onResume() {
