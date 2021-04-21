@@ -64,6 +64,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.becomedigital.sdk.identity.becomedigitalsdk.mediaRecorders.AutoFitTextureView;
+import com.becomedigital.sdk.identity.becomedigitalsdk.models.BDIVConfig;
+import com.becomedigital.sdk.identity.becomedigitalsdk.utils.SharedParameters;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
@@ -98,7 +100,14 @@ public class DocumentCaptureFragment extends Fragment
     private static ImageButton btnCapture;
     private static DocumentCaptureFragment documentCaptureFragmentS;
     private CountDownTimer countDownTimerFadeImage;
-
+    static private SharedParameters.typeDocument typeDocument;
+    private static BDIVConfig config;
+    private static String selectedCountry,
+            selectedCountyCo2,
+            urlVideoFile = "",
+            urlDocFront = "",
+            urlDocBack = "";
+    private static boolean isFront;
     static {
         ORIENTATIONS.append (Surface.ROTATION_0, 90);
         ORIENTATIONS.append (Surface.ROTATION_90, 0);
@@ -325,6 +334,8 @@ public class DocumentCaptureFragment extends Fragment
                         } else {
                             runPrecaptureSequence ( );
                         }
+                    }else{
+                        Log.d(TAG, "Integer afState: " +  afState);
                     }
                     break;
                 }
@@ -429,7 +440,21 @@ public class DocumentCaptureFragment extends Fragment
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated (savedInstanceState);
         String child = "";
-        if (getArguments ( ).getBoolean ("isFront")) {
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            isFront = getArguments().getBoolean("isFront");
+            config = (BDIVConfig) arguments.getSerializable("config");
+            typeDocument = (SharedParameters.typeDocument) arguments.getSerializable("typeDocument");
+            selectedCountry =  arguments.getString("selectedCountry");
+            selectedCountyCo2 = arguments.getString("selectedCountyCo2");
+            if (arguments.containsKey("urlDocBack"))
+                urlDocBack = arguments.getString("urlDocBack");
+            if (arguments.containsKey("urlDocFront"))
+                urlDocFront = arguments.getString("urlDocFront");
+            if (arguments.containsKey("urlVideoFile"))
+                urlVideoFile = arguments.getString("urlVideoFile");
+        }
+        if (isFront) {
             child = "picCompressFront.jpg";
         } else {
             child = "picCompressBack.jpg";
@@ -487,7 +512,7 @@ public class DocumentCaptureFragment extends Fragment
         ImageView imgDocReference = getActivity ( ).findViewById (R.id.imgDocReference);
         if (getArguments ( ).getBoolean ("isFront")) {
             documentFace = getActivity ( ).getString (R.string.text_tittle_intro_doc_front);
-            if (((MyApplication) getActivity ( ).getApplicationContext ( )).getSelectedDocument ( ) == MyApplication.typeDocument.PASSPORT) {
+            if (typeDocument == SharedParameters.typeDocument.PASSPORT) {
                 imgDocReference.setImageResource (R.drawable.reference_capture_passport);
             }
         } else {
@@ -506,9 +531,9 @@ public class DocumentCaptureFragment extends Fragment
             }
         }.start ( );
 
-        String selectedDocument = ((MyApplication) getActivity ( ).getApplicationContext ( )).getSelectedDocument ( ) == MyApplication.typeDocument.LICENSE ? getActivity ( ).getString (R.string.text_license) : ((MyApplication) getActivity ( ).getApplicationContext ( )).getSelectedDocument ( ) == MyApplication.typeDocument.PASSPORT ? getActivity ( ).getString (R.string.text_passport) : getActivity ( ).getString (R.string.text_dni_selec_document);
+        String selectedDocument = typeDocument == SharedParameters.typeDocument.LICENSE ? getActivity ( ).getString (R.string.text_license) : typeDocument == SharedParameters.typeDocument.PASSPORT ? getActivity ( ).getString (R.string.text_passport) : getActivity ( ).getString (R.string.text_dni_selec_document);
         textTittleVideo.setTextSize (18);
-        textTittleVideo.setText (String.format ("%s\n %s\n %s", documentFace, selectedDocument, ((MyApplication) getActivity ( ).getApplicationContext ( )).getSelectedCountry ( )));
+        textTittleVideo.setText (String.format ("%s\n %s\n %s", documentFace, selectedDocument, selectedCountry));
 
     }
 
@@ -994,7 +1019,14 @@ public class DocumentCaptureFragment extends Fragment
 //                String pathFile = CompressImage.compressImage (mFile.getPath ( ), documentCaptureFragmentS.getActivity (), documentCaptureFragmentS.getArguments ( ).getBoolean ("isFront"));
                 Bundle bundle = new Bundle ( );
                 bundle.putString ("pathImage", mFile.getPath ( ));
-                bundle.putBoolean ("isFront", documentCaptureFragmentS.getArguments ( ).getBoolean ("isFront"));
+                bundle.putBoolean ("isFront", isFront);
+                bundle.putString("selectedCountry",selectedCountry);
+                bundle.putString("selectedCountyCo2",selectedCountyCo2);
+                bundle.putSerializable("typeDocument",typeDocument);
+                bundle.putString ("urlVideoFile", urlVideoFile);
+                bundle.putSerializable("config",config);
+                bundle.putString ("urlDocBack", urlDocBack);
+                bundle.putString ("urlDocFront", urlDocFront);
 //                if (mFile.exists ( ))
 //                    mFile.delete ( );
                 findNavController (documentCaptureFragmentS.getActivity ( ), R.id.nav_host_fragment).navigate (R.id.actionPreviewImage, bundle);

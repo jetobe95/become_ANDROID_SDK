@@ -21,8 +21,10 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.becomedigital.sdk.identity.becomedigitalsdk.models.BDIVConfig;
 import com.becomedigital.sdk.identity.becomedigitalsdk.models.CountriesView;
 import com.becomedigital.sdk.identity.becomedigitalsdk.models.Countries_DB;
+import com.becomedigital.sdk.identity.becomedigitalsdk.utils.SharedParameters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +36,10 @@ public class SelecCountryFragment extends Fragment {
 
 
     private Button btnPassport, btnLicense, btnDNI;
-
+    private BDIVConfig config;
+    private String selectedCountry,
+            selectedCountyCo2,
+            urlVideoFile = "";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
@@ -50,6 +55,12 @@ public class SelecCountryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated (view, savedInstanceState);
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            config = (BDIVConfig) arguments.getSerializable("config");
+            if(arguments.containsKey("urlVideoFile"))
+            urlVideoFile = arguments.getString("urlVideoFile");
+        }
         LinearLayout lPassport = getActivity ( ).findViewById (R.id.lPasaporteC);
         LinearLayout lDNI = getActivity ( ).findViewById (R.id.lDNIC);
         LinearLayout lLicense = getActivity ( ).findViewById (R.id.lLicenseC);
@@ -57,12 +68,12 @@ public class SelecCountryFragment extends Fragment {
         btnLicense = getActivity ( ).findViewById (R.id.btnLicense);
         btnPassport = getActivity ( ).findViewById (R.id.btnPassport);
 
-        btnDNI.setOnClickListener (view1 -> goToIntroCaptureDoc(view1, MyApplication.typeDocument.DNI));
-        btnLicense.setOnClickListener (view1 -> goToIntroCaptureDoc(view1, MyApplication.typeDocument.LICENSE));
-        btnPassport.setOnClickListener (view1 -> goToIntroCaptureDoc(view1, MyApplication.typeDocument.PASSPORT));
+        btnDNI.setOnClickListener (view1 -> goToIntroCaptureDoc(view1, SharedParameters.typeDocument.DNI));
+        btnLicense.setOnClickListener (view1 -> goToIntroCaptureDoc(view1, SharedParameters.typeDocument.LICENSE));
+        btnPassport.setOnClickListener (view1 -> goToIntroCaptureDoc(view1, SharedParameters.typeDocument.PASSPORT));
 
         String split = getString (R.string.splitValidationTypes);
-        String[] validationTypesSubs = ((MyApplication) getActivity ( ).getApplicationContext ( )).getValidationTypes ( ).split (split);
+        String[] validationTypesSubs = config.getValidationTypes ( ).split (split);
         for (String validationTypesSub : validationTypesSubs) {
             switch (validationTypesSub) {
                 case "DNI":
@@ -77,15 +88,16 @@ public class SelecCountryFragment extends Fragment {
             }
         }
         loadCountriesSpinner ( );
-
-
     }
 
-
-    private void goToIntroCaptureDoc(View view, MyApplication.typeDocument typeDocument) {
-        ((MyApplication) getActivity ().getApplicationContext ()).setSelectedDocument (typeDocument);
+    private void goToIntroCaptureDoc(View view, SharedParameters.typeDocument typeDocument) {
         Bundle bundle = new Bundle ( );
         bundle.putBoolean ("isFront", true);
+        bundle.putString ("selectedCountry", selectedCountry);
+        bundle.putString ("selectedCountyCo2", selectedCountyCo2);
+        bundle.putSerializable ("typeDocument", typeDocument);
+        bundle.putSerializable ("config", config);
+        bundle.putString ("urlVideoFile", urlVideoFile);
         findNavController (view).navigate (R.id.actionIntroDocCapture, bundle);
     }
 
@@ -105,11 +117,11 @@ public class SelecCountryFragment extends Fragment {
         spinner.setOnItemSelectedListener (new AdapterView.OnItemSelectedListener ( ) {  // evento seleccion de pais
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 Object item = parent.getItemAtPosition (pos);
-                ((MyApplication) getActivity ( ).getApplicationContext ( )).setSelectedCountry (item.toString ( ));
+                selectedCountry = item.toString ( );
                 Log.d (TAG, "selected item: " + item);
                 Integer idInt = (int) (long) id;
                 Countries_DB countries_db = countriesView.getCountryCO2ById (String.valueOf (idInt), getActivity ());
-                ((MyApplication) getActivity ( ).getApplicationContext ( )).setSelectedCountyCo2 (countries_db.getCo_3 ( ));
+                selectedCountyCo2 = countries_db.getCo_3 ( );
                 Log.d (TAG, "selected item: " + item);
                 if (!item.equals (getString (R.string.select_text))) {
                     btnDNI.setEnabled (true);
@@ -120,11 +132,9 @@ public class SelecCountryFragment extends Fragment {
                     btnPassport.setTextColor (getResources ( ).getColor (R.color.black));
                     btnPassport.setCompoundDrawablesWithIntrinsicBounds(R.drawable.passport_icon_btn, 0, R.drawable.arrownex, 0);
                     btnDNI.setCompoundDrawablesWithIntrinsicBounds(R.drawable.dni_icon_btn, 0, R.drawable.arrownex, 0);
-                    btnLicense.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon_d_license, 0, R.drawable.arrownex, 0);
+                    btnLicense.setCompoundDrawablesWithIntrinsicBounds(R.drawable.driver_icon_btn, 0, R.drawable.arrownex, 0);
                 }
-
             }
-
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
@@ -132,7 +142,6 @@ public class SelecCountryFragment extends Fragment {
         dataAdapter.setDropDownViewResource (R.layout.simple_spinner_dropdown);
         spinner.setAdapter (dataAdapter);
         dataAdapter.notifyDataSetChanged ( );
-
     }
 
     class CustomArrayAdapter<T> extends ArrayAdapter<T> {
@@ -155,9 +164,4 @@ public class SelecCountryFragment extends Fragment {
             return view;
         }
     }
-
-
-
-
-
 }

@@ -305,9 +305,14 @@ public class CompressImage {
         if (cursor == null) {
             return contentUri.getPath ( );
         } else {
-            cursor.moveToFirst ( );
-            int index = cursor.getColumnIndex (MediaStore.Images.ImageColumns.DATA);
-            return cursor.getString (index);
+            try {
+                cursor.moveToFirst ( );
+                int index = cursor.getColumnIndex (MediaStore.Images.ImageColumns.DATA);
+                return cursor.getString (index);
+            }catch (Exception e){
+                e.printStackTrace ( );
+                return "";
+            }
         }
     }
 

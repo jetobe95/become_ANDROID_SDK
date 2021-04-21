@@ -26,13 +26,14 @@
         android:id="@+id/textView4"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="28dp"
         android:gravity="center"
         android:text="@string/text_info_preview"
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_sub_tittle"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/imgToPreview"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/imgToPreview"
         app:layout_constraintTop_toBottomOf="@+id/imgToPreview" />
 

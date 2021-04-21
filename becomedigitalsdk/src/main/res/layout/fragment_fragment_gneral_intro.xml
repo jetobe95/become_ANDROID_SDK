@@ -56,7 +56,8 @@
                 android:layout_weight="1"
                 android:visibility="gone"
                 app:srcCompat="@drawable/video_icon126x249_2x"
-                tools:ignore="ContentDescription,NestedWeights" />
+                tools:ignore="ContentDescription,NestedWeights"
+                tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/textVideo"
@@ -73,7 +74,8 @@
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/text_size_body"
                 android:visibility="gone"
-                tools:targetApi="o" />
+                tools:targetApi="o"
+                tools:visibility="visible" />
         </LinearLayout>
 
         <LinearLayout
@@ -82,7 +84,8 @@
             android:layout_height="match_parent"
             android:layout_weight="3"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:visibility="visible">
 
             <TextView
                 android:id="@+id/textAnd"
@@ -97,7 +100,8 @@
                 android:textColor="@color/grayLigth"
                 android:textSize="@dimen/text_size_big"
                 android:visibility="gone"
-                tools:targetApi="o" />
+                tools:targetApi="o"
+                tools:visibility="visible" />
         </LinearLayout>
 
         <LinearLayout

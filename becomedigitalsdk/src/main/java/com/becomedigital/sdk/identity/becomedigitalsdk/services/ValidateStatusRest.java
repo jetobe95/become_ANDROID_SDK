@@ -10,23 +10,17 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import com.becomedigital.sdk.identity.becomedigitalsdk.MyApplication;
 import com.becomedigital.sdk.identity.becomedigitalsdk.R;
 import com.becomedigital.sdk.identity.becomedigitalsdk.callback.AsynchronousTask;
-import com.becomedigital.sdk.identity.becomedigitalsdk.callback.SharedParameters;
+import com.becomedigital.sdk.identity.becomedigitalsdk.models.BDIVConfig;
 import com.becomedigital.sdk.identity.becomedigitalsdk.models.ResponseIV;
+import com.becomedigital.sdk.identity.becomedigitalsdk.utils.SharedParameters;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -37,13 +31,14 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
 public class ValidateStatusRest {
     /* access modifiers changed from: private */
     public static final String TAG = ValidateStatusRest.class.getSimpleName();
     private final int USERRESPONSE = 0;
     private final int INITAUTHRESPONSE = 1;
     private final int ADDDATARESPONSE = 2;
+    private final int USERRESPONSEINITIAL = 3;
+
 
     public void getAuth(final Activity activity, String clientID, String clientSecret, final AsynchronousTask asynchronousTask) {
 
@@ -112,30 +107,38 @@ public class ValidateStatusRest {
     private File document1 = null;
     private File document2 = null;
 
-    public void addDataServer(final Activity activity, final AsynchronousTask asynchronousTask) {
+    public void addDataServer(final Activity activity,
+                              BDIVConfig config,
+                              SharedParameters.typeDocument typeDocument ,
+                              String urlDocFront,
+                              String selectedCountyCo2,
+                              String urlDocBack,
+                              String urlVideo,
+                              String accesToken,
+                              final AsynchronousTask asynchronousTask) {
         AsyncTask.execute(() -> {
             try {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity); // get url
                 String serverUrl = preferences.getString(SharedParameters.URL_ADD_DATA, SharedParameters.url_add_data);
                 String split = activity.getString(R.string.splitValidationTypes);
-                String[] validationTypesSubs = ((MyApplication) activity.getApplicationContext()).getValidationTypes().split(split);
+                String[] validationTypesSubs = config.getValidationTypes().split(split);
                 boolean containsVideo = false;
-                boolean isPassword = false;
+                boolean isPassport = false;
 
                 for (String validationTypesSub : validationTypesSubs) {
                     if (validationTypesSub.equals("VIDEO")) {
                         containsVideo = true;
                     }
                 }
-                if (((MyApplication) activity.getApplicationContext()).getSelectedDocument() == MyApplication.typeDocument.PASSPORT) {
-                    isPassword = true;
+                if (typeDocument == SharedParameters.typeDocument.PASSPORT) {
+                    isPassport = true;
                 }
                 RequestBody requestBody = null;
                 ContentResolver contentResolver = activity.getContentResolver();
                 if (containsVideo) {
-                    requestBody = addDocumentsAndVideo(isPassword, activity);
+                    requestBody = addDocumentsAndVideo(isPassport,urlDocFront,config,selectedCountyCo2,urlDocBack,typeDocument,urlVideo);
                 } else {
-                    requestBody = addDocuments(isPassword, activity);
+                    requestBody = addDocuments(isPassport,urlDocFront,config,selectedCountyCo2,urlDocBack,typeDocument);
                 }
 
 
@@ -145,7 +148,7 @@ public class ValidateStatusRest {
                         .writeTimeout(activity.getResources().getInteger(R.integer.timeOut), TimeUnit.SECONDS).build();
 
                 Request request = new Request.Builder()
-                        .header("Authorization", "Bearer " + ((MyApplication) activity.getApplicationContext()).getAccess_token())
+                        .header("Authorization", "Bearer " + accesToken)
                         .url(serverUrl)
                         .post(requestBody)
                         .build();
@@ -204,29 +207,34 @@ public class ValidateStatusRest {
     }
 
 
-    private RequestBody addDocuments(Boolean isPassword, Activity activity) {
+    private RequestBody addDocuments(Boolean isPassport,
+                                     String urlDocFront,
+                                     BDIVConfig config,
+                                     String selectedCountyCo2,
+                                     String urlDocBack,
+                                     SharedParameters.typeDocument typeDocument) {
         RequestBody requestBody;
-        document1 = new File(((MyApplication) activity.getApplicationContext()).getUrlDocFront());
-        if (isPassword) {
+        document1 = new File(urlDocFront);
+        if (isPassport) {
             requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
-                    .addFormDataPart("contract_id", ((MyApplication) activity.getApplicationContext()).getContractId())
-                    .addFormDataPart("user_id",  ((MyApplication) activity.getApplicationContext()).getUser_id())
-                    .addFormDataPart("country", ((MyApplication) activity.getApplicationContext()).getSelectedCountyCo2().toUpperCase())
+                    .addFormDataPart("contract_id", config.getContractId())
+                    .addFormDataPart("user_id",  config.getUserId())
+                    .addFormDataPart("country", selectedCountyCo2)
                     .addFormDataPart("file_type", "passport")
                     .addFormDataPart("document1", "document1.jpg", RequestBody.create(MediaType.parse("image/jpg"), document1))
                     .build();
         } else {
-            document2 = new File(((MyApplication) activity.getApplicationContext()).getUrlDocBack());
+            document2 = new File(urlDocBack);
             String fileType = "driving-license";
-            if (((MyApplication) activity.getApplicationContext()).getSelectedDocument() == MyApplication.typeDocument.DNI) {
+            if (typeDocument == SharedParameters.typeDocument.DNI) {
                 fileType = "national-id";
             }
             requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
-                    .addFormDataPart("contract_id", ((MyApplication) activity.getApplicationContext()).getContractId())
-                    .addFormDataPart("user_id", ((MyApplication) activity.getApplicationContext()).getUser_id())
-                    .addFormDataPart("country", ((MyApplication) activity.getApplicationContext()).getSelectedCountyCo2().toUpperCase())
+                    .addFormDataPart("contract_id", config.getContractId())
+                    .addFormDataPart("user_id",  config.getUserId())
+                    .addFormDataPart("country", selectedCountyCo2)
                     .addFormDataPart("file_type", fileType)
                     .addFormDataPart("document1",
                             "document1.jpg",
@@ -239,16 +247,22 @@ public class ValidateStatusRest {
         return requestBody;
     }
 
-    private RequestBody addDocumentsAndVideo(Boolean isPassword, Activity activity) {
+    private RequestBody addDocumentsAndVideo(Boolean isPassport,
+                                             String urlDocFront,
+                                             BDIVConfig config,
+                                             String selectedCountyCo2,
+                                             String urlDocBack,
+                                             SharedParameters.typeDocument typeDocument,
+                                             String urlVideo) {
         RequestBody requestBody;
-        video = new File(((MyApplication) activity.getApplicationContext()).getUrlVideo());
-        document1 = new File(((MyApplication) activity.getApplicationContext()).getUrlDocFront());
-        if (isPassword) {
+        video = new File(urlVideo);
+        document1 = new File(urlDocFront);
+        if (isPassport) {
             requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
-                    .addFormDataPart("contract_id", ((MyApplication) activity.getApplicationContext()).getContractId())
-                    .addFormDataPart("user_id", ((MyApplication) activity.getApplicationContext()).getUser_id())
-                    .addFormDataPart("country", ((MyApplication) activity.getApplicationContext()).getSelectedCountyCo2().toUpperCase())
+                    .addFormDataPart("contract_id", config.getContractId())
+                    .addFormDataPart("user_id",  config.getUserId())
+                    .addFormDataPart("country", selectedCountyCo2)
                     .addFormDataPart("file_type", "passport")
                     .addFormDataPart("video",
                             "video.mp4",
@@ -259,16 +273,16 @@ public class ValidateStatusRest {
                     .build();
         } else {
 
-            document2 = new File(((MyApplication) activity.getApplicationContext()).getUrlDocBack());
+            document2 = new File(urlDocBack);
             String fileType = "driving-license";
-            if (((MyApplication) activity.getApplicationContext()).getSelectedDocument() == MyApplication.typeDocument.DNI) {
+            if (typeDocument == SharedParameters.typeDocument.DNI) {
                 fileType = "national-id";
             }
             requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
-                    .addFormDataPart("contract_id", ((MyApplication) activity.getApplicationContext()).getContractId())
-                    .addFormDataPart("user_id", ((MyApplication) activity.getApplicationContext()).getUser_id())
-                    .addFormDataPart("country", ((MyApplication) activity.getApplicationContext()).getSelectedCountyCo2().toUpperCase())
+                    .addFormDataPart("contract_id", config.getContractId())
+                    .addFormDataPart("user_id",  config.getUserId())
+                    .addFormDataPart("country", selectedCountyCo2)
                     .addFormDataPart("file_type", fileType)
                     .addFormDataPart("video",
                             "video.mp4",
@@ -284,7 +298,7 @@ public class ValidateStatusRest {
         return requestBody;
     }
 
-    public void getDataAutentication(String urlGetResponse, final Activity activity, final AsynchronousTask asynchronousTask) {
+    public void getDataAutentication(Boolean isInitialValidation, String urlGetResponse, String access_token, final Activity activity, final AsynchronousTask asynchronousTask) {
         AsyncTask.execute(() -> {
             try {
                 OkHttpClient client = new OkHttpClient.Builder()
@@ -294,7 +308,7 @@ public class ValidateStatusRest {
 
                 Request request = new Request.Builder()
                         .url(urlGetResponse)
-                        .header("Authorization", "Bearer " + ((MyApplication) activity.getApplicationContext()).getAccess_token())
+                        .header("Authorization", "Bearer " + access_token)
                         .get()
                         .build();
 
@@ -316,7 +330,7 @@ public class ValidateStatusRest {
                             JSONObject Jobject = new JSONObject(jsonData);
 
                             if (Jobject.has("apimsg")) {
-                                asynchronousTask.onReceiveResultsTransaction(new ResponseIV(ResponseIV.PENDING, Jobject.getString("apimsg")), USERRESPONSE);
+                                asynchronousTask.onReceiveResultsTransaction(new ResponseIV(ResponseIV.NOFOUND, Jobject.getString("apimsg")), isInitialValidation ? USERRESPONSEINITIAL : USERRESPONSE);
                             } else if (Jobject.has("verification") &&
                                     Jobject.has("userAgent") &&
                                     Jobject.has("registry") &&
@@ -329,7 +343,7 @@ public class ValidateStatusRest {
                                 if (JobjectV.has("verification_status")) {
 
                                     if (JobjectV.getString("verification_status").equals("La verificacion tuvo un error")) {
-                                        asynchronousTask.onReceiveResultsTransaction(new ResponseIV(ResponseIV.ERROR, JobjectV.getString("verification_status")), USERRESPONSE);
+                                        asynchronousTask.onReceiveResultsTransaction(new ResponseIV(ResponseIV.ERROR, JobjectV.getString("verification_status")), isInitialValidation ? USERRESPONSEINITIAL : USERRESPONSE);
                                     } else {
                                         boolean face_match = false,
                                                 template = false,
@@ -385,7 +399,13 @@ public class ValidateStatusRest {
                                                     "verification complete",
                                                     ResponseIV.SUCCES
                                             );
-                                            asynchronousTask.onReceiveResultsTransaction(responseIV, USERRESPONSE);
+                                            int responseType  = isInitialValidation ? USERRESPONSEINITIAL : USERRESPONSE;
+                                            asynchronousTask.onReceiveResultsTransaction(responseIV, responseType);
+                                        }else if(isInitialValidation && JobjectV.getString("verification_status").equals("pending")){
+                                            ResponseIV responseIV = new ResponseIV();
+                                            responseIV.setMessage(JobjectV.getString("verification_status"));
+                                            responseIV.setResponseStatus(ResponseIV.PENDING);
+                                            asynchronousTask.onReceiveResultsTransaction(responseIV, USERRESPONSEINITIAL);
                                         }
                                     }
                                 }

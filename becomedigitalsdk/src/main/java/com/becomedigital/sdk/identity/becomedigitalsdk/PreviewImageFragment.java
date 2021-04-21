@@ -23,6 +23,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.becomedigital.sdk.identity.becomedigitalsdk.models.BDIVConfig;
+import com.becomedigital.sdk.identity.becomedigitalsdk.utils.SharedParameters;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,7 +44,14 @@ import static androidx.navigation.Navigation.findNavController;
  */
 public class PreviewImageFragment extends Fragment {
 
-
+    private SharedParameters.typeDocument typeDocument;
+    private BDIVConfig config;
+    private String selectedCountry,
+            selectedCountyCo2,
+            urlVideoFile = "",
+            urlDocFront = "",
+            urlDocBack = "";
+    private boolean isFront;
     public PreviewImageFragment() {
         // Required empty public constructor
     }
@@ -61,7 +71,20 @@ public class PreviewImageFragment extends Fragment {
         super.onViewCreated (view, savedInstanceState);
         ((MainBDIV) getActivity ( )).changeColorToolbar (true);
         ImageView imgToPreview = getActivity ( ).findViewById (R.id.imgToPreview);
-
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            config = (BDIVConfig) arguments.getSerializable("config");
+            typeDocument = (SharedParameters.typeDocument) arguments.getSerializable("typeDocument");
+            if (arguments.containsKey("urlVideoFile"))
+                urlVideoFile = arguments.getString("urlVideoFile");
+            selectedCountyCo2 = arguments.getString("selectedCountyCo2");
+            selectedCountry = arguments.getString("selectedCountry");
+            if (arguments.containsKey("urlDocBack"))
+                urlDocBack = arguments.getString("urlDocBack");
+            if (arguments.containsKey("urlDocFront"))
+                urlDocFront = arguments.getString("urlDocFront");
+            isFront = getArguments().getBoolean("isFront");
+        }
         btnIsOkImage = getActivity ( ).findViewById (R.id.btnOkImage);
         Button btnRetry = getActivity ( ).findViewById (R.id.btnRetry);
 
@@ -82,9 +105,9 @@ public class PreviewImageFragment extends Fragment {
             });
             btnIsOkImage.setOnClickListener (view12 -> {
                 if (getArguments ( ).getBoolean ("isFront")) {
-                    ((MyApplication) getActivity ( ).getApplication ( )).setUrlDocFront (pathToFile);
+                    urlDocFront = pathToFile;
                 } else {
-                    ((MyApplication) getActivity ( ).getApplication ( )).setUrlDocBack (pathToFile);
+                    urlDocBack = pathToFile;
                 }
                 navigate ( );
             });
@@ -92,16 +115,23 @@ public class PreviewImageFragment extends Fragment {
     }
 
     private void navigate() {
-        if (((MyApplication) getActivity ( ).getApplicationContext ( )).getSelectedDocument ( ) == MyApplication.typeDocument.PASSPORT) {
-            findNavController (getActivity ( ), R.id.nav_host_fragment).navigate (R.id.actionFinish);
+        Bundle bundle = new Bundle ( );
+        bundle.putString ("urlDocFront", urlDocFront);
+        bundle.putString ("urlDocBack", urlDocBack);
+        bundle.putString("selectedCountry",selectedCountry);
+        bundle.putString("selectedCountyCo2",selectedCountyCo2);
+        bundle.putSerializable("typeDocument",typeDocument);
+        bundle.putSerializable("config",config);
+        bundle.putString ("urlVideoFile", urlVideoFile);
+        if (typeDocument == SharedParameters.typeDocument.PASSPORT) {
+            findNavController (getActivity ( ), R.id.nav_host_fragment).navigate (R.id.actionFinish, bundle);
         } else {
-            Bundle bundle = new Bundle ( );
-            bundle.putBoolean ("isFront", false);
-            if (getArguments ( ).getBoolean ("isFront")) {
+
+            if (isFront) {
                 bundle.putBoolean ("isFront", false);
                 findNavController (getActivity ( ), R.id.nav_host_fragment).navigate (R.id.actionCaptureBackDocument, bundle);
             } else {
-                findNavController (getActivity ( ), R.id.nav_host_fragment).navigate (R.id.actionFinish);
+                findNavController (getActivity ( ), R.id.nav_host_fragment).navigate (R.id.actionFinish, bundle);
             }
         }
     }
