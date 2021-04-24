@@ -1,5 +1,7 @@
 package com.becomedigital.sdk.identity.becomedigitalsdkiv;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
 import com.becomedigital.sdk.identity.becomedigitalsdk.MainBDIV;
 import com.becomedigital.sdk.identity.becomedigitalsdk.callback.BecomeCallBackManager;
 import com.becomedigital.sdk.identity.becomedigitalsdk.callback.BecomeInterfaseCallback;
@@ -16,6 +19,7 @@ import com.becomedigital.sdk.identity.becomedigitalsdk.callback.BecomeResponseMa
 import com.becomedigital.sdk.identity.becomedigitalsdk.callback.LoginError;
 import com.becomedigital.sdk.identity.becomedigitalsdk.models.BDIVConfig;
 import com.becomedigital.sdk.identity.becomedigitalsdk.models.ResponseIV;
+
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -44,14 +48,11 @@ public class MainActivity extends AppCompatActivity {
         EditText textVlidationType = findViewById(R.id.validationType);
         EditText textUserId = findViewById(R.id.textUserId);
         Button btnAut = findViewById(R.id.btnAuth);
-        String clientSecretP = "YOUR_CLIENT_SECRET";
-        String clientIdP = "YOUR_CLIENT_ID";
-        String contractIdP = "YOUR_CONTRACT_ID";
         btnAut.setOnClickListener(view -> {
             String validatiopnTypes = textVlidationType.getText().toString().isEmpty() ? "VIDEO/PASSPORT/DNI/LICENSE" : textVlidationType.getText().toString();
-            String clientSecret = textClientSecret.getText().toString().isEmpty() ? clientSecretP : textClientSecret.getText().toString();
-            String clientId = textClientId.getText().toString().isEmpty() ? clientIdP : textClientId.getText().toString();
-            String contractId = textContractId.getText().toString().isEmpty() ? contractIdP : textContractId.getText().toString();
+            String clientSecret = textClientSecret.getText().toString().isEmpty() ? "FKLDM63GPH89TISBXNZ4YJUE57WRQA25" : textClientSecret.getText().toString();
+            String clientId = textClientId.getText().toString().isEmpty() ? "acc_demo" : textClientId.getText().toString();
+            String contractId = textContractId.getText().toString().isEmpty() ? "2" : textContractId.getText().toString();
             Date currentTime = Calendar.getInstance().getTime();
             SimpleDateFormat format1 = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.getDefault());
             String inActiveDate = format1.format(currentTime);
