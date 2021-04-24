@@ -337,16 +337,13 @@ public class ValidateStatusRest {
                                 JSONObject JobjectUA = new JSONObject();
                                 JSONObject JobjectR  = new JSONObject();
                                 JSONObject JobjectM = new JSONObject(Jobject.getString("media"));
-
                                 if (Jobject.has("userAgent")){
                                     JobjectUA = new JSONObject(Jobject.getString("userAgent"));
                                 }
                                 if(Jobject.has("registry"))  {
                                     JobjectR = new JSONObject(Jobject.getString("registry"));
                                 }
-
                                 if (JobjectV.has("verification_status")) {
-
                                     if (JobjectV.getString("verification_status").equals("La verificacion tuvo un error")) {
                                         asynchronousTask.onReceiveResultsTransaction(new ResponseIV(ResponseIV.ERROR, JobjectV.getString("verification_status")), isInitialValidation ? USERRESPONSEINITIAL : USERRESPONSE);
                                     } else {
