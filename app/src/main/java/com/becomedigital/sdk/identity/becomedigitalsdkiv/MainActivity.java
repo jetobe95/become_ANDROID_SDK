@@ -50,9 +50,9 @@ public class MainActivity extends AppCompatActivity {
         Button btnAut = findViewById(R.id.btnAuth);
         btnAut.setOnClickListener(view -> {
             String validatiopnTypes = textVlidationType.getText().toString().isEmpty() ? "VIDEO/PASSPORT/DNI/LICENSE" : textVlidationType.getText().toString();
-            String clientSecret = textClientSecret.getText().toString().isEmpty() ? "FKLDM63GPH89TISBXNZ4YJUE57WRQA25" : textClientSecret.getText().toString();
-            String clientId = textClientId.getText().toString().isEmpty() ? "acc_demo" : textClientId.getText().toString();
-            String contractId = textContractId.getText().toString().isEmpty() ? "2" : textContractId.getText().toString();
+            String clientSecret = textClientSecret.getText().toString().isEmpty() ? "FKLDM639TGGFFGGISBXNZ4YJUE57WRQA25" : textClientSecret.getText().toString();
+            String clientId = textClientId.getText().toString().isEmpty() ? "test_demo" : textClientId.getText().toString();
+            String contractId = textContractId.getText().toString().isEmpty() ? "44" : textContractId.getText().toString();
             Date currentTime = Calendar.getInstance().getTime();
             SimpleDateFormat format1 = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.getDefault());
             String inActiveDate = format1.format(currentTime);
